@@ -8,7 +8,7 @@ Ujian Akhir Semester PBO, Membuat CRUD Mahasiswa disertai dengan laporan menggun
 
 ## 2. Membuat Projek/Package baru pada Netbenas, dan menyambungkan database menggunakan Persistance.
 ### a. Masuk netbeans, buat package baru
-![image](https://github.com/user-attachments/assets/fa3f4981-191f-497e-a4bc-f2ee2e31bed6)
+![image](https://github.com/user-attachments/assets/90e684d6-4c18-47e2-bc8b-924e8482488a)
 ### b. Kemudian buat file Persistance untuk menyambungkan ke database, klik kanan pada Package > New > Entity Classes from Databases
 ![image](https://github.com/user-attachments/assets/f03c96e9-db1e-41f4-ab70-065eafdecd08)
 ### c. Buat koneksi baru pada New Connection
@@ -16,31 +16,31 @@ Ujian Akhir Semester PBO, Membuat CRUD Mahasiswa disertai dengan laporan menggun
 ![image](https://github.com/user-attachments/assets/9bc2bd25-fd0f-4077-8d77-8fc5625e90ee)
 Pilih Driver PostgreSQL
 ### d. Masukkan database anda dan klik next
-![image](https://github.com/user-attachments/assets/addc6ebc-55d7-4f84-9e57-16fbfe3c0b73)
+![image](https://github.com/user-attachments/assets/bde6b8e2-1ea8-4daf-bdda-d90613fb58da)
 ### e. Add All pada semua tabel yang ada dalam database
-![image](https://github.com/user-attachments/assets/a707cead-a327-4de4-8b2b-3db6354d317b)
+![image](https://github.com/user-attachments/assets/c482acb3-4086-4259-a3c6-c8c4d5621029)
 
 ## 2. Buat File JFrame Form untuk membuat tampilan GUI, berikut adalah tampilan dan JFrame yang harus dibuat :
 ### a. Tampilan formMahasiswa
-![image](https://github.com/user-attachments/assets/9e46adbf-371b-4349-8895-cec9ab9adece)
+![image](https://github.com/user-attachments/assets/f26a646a-ba1a-4094-8116-d72a203368d3)
 Dengan ketentuan :
 TextField (Nim, Nama, Alamat, AsalSMA, NamaOrtu)
-Button (Simpan, Update, Delete, Exit, Upload, Cetak, Logout)
-Table Mouse Clicked (tblHasil)
+Button (Insert, Update, Delete, Clear, Upload, Print, Logout)
+Table Mouse Clicked
 
-### b. Tampilan formLogin
-![image](https://github.com/user-attachments/assets/38efb9c3-df18-425e-b86c-b4cff1774028)
+### b. Tampilan form LoginMahasiswa
+![image](https://github.com/user-attachments/assets/76de145f-c5fa-4834-b364-1a14db8011e7)
 Dengan Ketentuan :
 TextField (Username, Password)
 Button (Login)
-Text (Create new account)
-CheckBox (Show Password)
+Text (Create an account)
+CheckBox (Tampilkan Password)
 
-### c. Tampilan formCreateLogin
-![image](https://github.com/user-attachments/assets/262f7490-a32b-45a5-b269-82d71780bf93)
+### c. Tampilan form CreateAccount
+![image](https://github.com/user-attachments/assets/b5147f9f-2809-4820-a16a-5ab66f376d7a)
 TextField (Username, Password)
-Button (Login)
-Text (Create new account)
+Text (Login)
+Button (Create new account)
 CheckBox (Show Password)
 
 ## 3. Buat CRUD pada formMahasiswa
@@ -48,105 +48,108 @@ CheckBox (Show Password)
 Masukkan source berikut untuk membuat tampilan awal pada form Mahasiswa
 <pre>
   public void tampil() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
-        EntityManager em = emf.createEntityManager();
+        em = emf.createEntityManager();
 
         try {
-            DefaultTableModel tbnmhs = new DefaultTableModel(new String[]{"NIM", "NAMA", "ALAMAT", "ASALSMA", "NAMAORTU"}, 0);
+            // Buat model tabel dengan kolom yang sesuai
+            DefaultTableModel tbnmhs = new DefaultTableModel(new String[]{"NIM", "Nama", "Alamat", "AsalSMA", "NamaOrangTua"}, 0);
 
-            List<Mahasiswaa> mahasiswaaList = em.createNamedQuery("Mahasiswaa.findAll", Mahasiswaa.class).getResultList();
+            // Menggunakan NamedQuery "Matakuliah.findAll" untuk mengambil semua data
+            List<Mahasiswa> mahasiswaList = em.createNamedQuery("Mahasiswa.findAll", Mahasiswa.class).getResultList();
 
-//            List<Mahasiswa_1> mahasiswaList = em.createNamedQuery("Mahasiswa.findAll", Mahasiswa_1.class).getResultList();
-            for (Mahasiswaa mahasiswaa : mahasiswaaList) {
+            // Iterasi hasil query dan tambahkan baris ke model tabel
+            for (Mahasiswa mahasiswa : mahasiswaList) {
                 tbnmhs.addRow(new Object[]{
-                    mahasiswaa.getNim(),
-                    mahasiswaa.getNama(),
-                    mahasiswaa.getAlamat(),
-                    mahasiswaa.getAsalsma(),
-                    mahasiswaa.getNamaortu()
+                    mahasiswa.getNim(),
+                    mahasiswa.getNama(),
+                    mahasiswa.getAlamat(),
+                    mahasiswa.getAsalsma(),
+                    mahasiswa.getNamaorangtua()
                 });
             }
 
             // Atur model tabel ke tabel GUI
-            tblHasil.setModel(tbnmhs);
+            tabel.setModel(tbnmhs);
         } catch (Exception ex) {
-            Logger.getLogger(Mahasiswaa.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            em.close(); // Tutup EntityManager setelah selesai
         }
     }
 </pre>
 Sesuaikan dengan database anda dan File Persistance anda.
 
-### b. MEMBUAT FUNGSI PADA BUTTON SIMPAN (CREATE)
+### b. MEMBUAT FUNGSI PADA BUTTON INSERT
 Masukkan source berikut untuk memasukkan data pada form Mahasiswa
 <pre>
-  private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {                                          
+  private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
-        if (txtNim.getText().equals("") || txtNama.getText().equals("")
-                || txtAlamat.getText().equals("") || txtAsalSMA.getText().equals("") || txtNamaOrtu.getText().equals("")) {
+        if (tfNIM.getText().equals("") || tfNama.getText().equals("") || tfAlamat.getText().equals("") || tfAsal.getText().equals("") || tfOrtu.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Isi semua data");
         } else {
-            String nim, nama, alamat, asalSMA, namaOrtu;
-            nim = txtNim.getText();
-            nama = txtNama.getText();
-            alamat = txtAlamat.getText();
-            asalSMA = txtAsalSMA.getText();
-            namaOrtu = txtNamaOrtu.getText();
+            String NIM, Nama, Alamat, AsalSMA, NamaOrangTua;
+            NIM = tfNIM.getText();
+            Nama = tfNama.getText();
+            Alamat = tfAlamat.getText();
+            AsalSMA = tfAsal.getText();
+            NamaOrangTua = tfOrtu.getText();
+            int nim;
+            //int sks;
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
-            EntityManager em = emf.createEntityManager();
+            try {
+                nim = Integer.parseInt(tfNIM.getText());
+                // smt = Integer.parseInt(tfSKS.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "NIM harus berupa angka", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             em.getTransaction().begin();
 
-            Mahasiswaa mk = new Mahasiswaa();
-            mk.setNim(nim);
-            mk.setNama(nama);
-            mk.setAlamat(alamat);
-            mk.setAsalsma(asalSMA);
-            mk.setNamaortu(namaOrtu);
+            mahasiswa.setNim(String.valueOf(NIM));
+            mahasiswa.setNama(Nama);
+            mahasiswa.setAlamat(Alamat);
+            mahasiswa.setAsalsma(AsalSMA);
+            mahasiswa.setNamaorangtua(NamaOrangTua);
 
-            em.persist(mk);
+            em.persist(mahasiswa);
 
             em.getTransaction().commit();
             JOptionPane.showMessageDialog(null, "Sukses diinput");
+
             bersih();
             tampil();
 
-            em.close();
-            emf.close();
         }
         tampil();
-    }            
+    }
 </pre>
 
-### c. MEMBUAT FUNGSI PADA BUTTON UPDATE (UPDATE)
+### c. MEMBUAT FUNGSI PADA BUTTON UPDATE
 <pre>
   private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
-        if (txtNim.getText().equals("") || txtNama.getText().equals("")
-                || txtAlamat.getText().equals("") || txtAsalSMA.getText().equals("") || txtNamaOrtu.getText().equals("")) {
+        if (tfNIM.getText().equals("") || tfNama.getText().equals("")
+                || tfAlamat.getText().equals("") || tfAsal.getText().equals("") || tfOrtu.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Isi semua data");
         } else {
-            String nim, nama, alamat, asalSMA, namaOrtu;
-            nim = txtNim.getText();
-            nama = txtNama.getText();
-            alamat = txtAlamat.getText();
-            asalSMA = txtAsalSMA.getText();
-            namaOrtu = txtNamaOrtu.getText();
+            String NIM, Nama, Alamat, AsalSMA, NamaOrangTua;
+            NIM = tfNIM.getText();
+            Nama = tfNama.getText();
+            Alamat = tfAlamat.getText();
+            AsalSMA = tfAsal.getText();
+            NamaOrangTua = tfOrtu.getText();
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("UAS_PBO");
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
 
-            Mahasiswaa mk = em.find(Mahasiswaa.class, nim);
+            Mahasiswa mk = em.find(Mahasiswa.class, NIM);
             if (mk == null) {
                 JOptionPane.showMessageDialog(null, "Data tidak ditemukan");
             } else {
-                mk.setNim(nim);
-                mk.setNama(nama);
-                mk.setAlamat(alamat);
-                mk.setAsalsma(asalSMA);
-                mk.setNamaortu(namaOrtu);
+                mk.setNim(NIM);
+                mk.setNama(Nama);
+                mk.setAlamat(Alamat);
+                mk.setAsalsma(AsalSMA);
+                mk.setNamaorangtua(NamaOrangTua);
 
                 em.getTransaction().commit();
                 JOptionPane.showMessageDialog(null, "Data berhasil diupdate");
@@ -154,35 +157,34 @@ Masukkan source berikut untuk memasukkan data pada form Mahasiswa
                 em.close();
                 emf.close();
                 bersih();
-                txtNim.setEditable(true);
+                tfNIM.setEditable(true);
             }
         }
         tampil();
-    }           
+    }            
 </pre>
 
-### d. MEMBUAT FUNGSI PADA BUTTON DELETE (DELETE)
+### d. MEMBUAT FUNGSI PADA BUTTON DELETE
 <pre>
   private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
-        EntityManager em = emf.createEntityManager();
+        em = emf.createEntityManager();
 
         try {
             // Validasi input
-            if (txtNim.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Masukkan Kode Mata Kuliah yang akan dihapus");
+            if (tfNIM.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Masukkan NIM yang akan dihapus");
             } else {
                 // Mulai transaksi
                 em.getTransaction().begin();
 
                 // Cari entitas Matakuliah berdasarkan kode mata kuliah
-                String nim = txtNim.getText();
-                Mahasiswaa mahasiswaa = em.find(Mahasiswaa.class, nim);
+                String NIM = tfNIM.getText();
+                mahasiswa = em.find(Mahasiswa.class, NIM);
 
-                if (mahasiswaa != null) {
+                if (mahasiswa != null) {
                     // Hapus entitas jika ditemukan
-                    em.remove(mahasiswaa);
+                    em.remove(mahasiswa);
 
                     // Commit transaksi
                     em.getTransaction().commit();
@@ -191,7 +193,7 @@ Masukkan source berikut untuk memasukkan data pada form Mahasiswa
                     // Refresh data pada tampilan
                     tampil();
                 } else {
-                    JOptionPane.showMessageDialog(null, "Data tidak ditemukan untuk KodeMK: " + nim);
+                    JOptionPane.showMessageDialog(null, "Data tidak ditemukan untuk NIM: " + NIM);
                     em.getTransaction().rollback();
                 }
             }
@@ -202,80 +204,42 @@ Masukkan source berikut untuk memasukkan data pada form Mahasiswa
             }
             JOptionPane.showMessageDialog(null, "Gagal menghapus data");
             System.out.println(e.getMessage());
-        } finally {
-            em.close();
         }
 
-        bersih();
-        tampil();
-    }      
+        // Kosongkan text field setelah penghapusan
+        tfNIM.setText("");
+        tfNama.setText("");
+        tfAlamat.setText("");
+        tfAsal.setText("");
+        tfOrtu.setText("");
+    }
 </pre>
 
-### e. MEMBUAT FUNGSI PADA BUTTON EXIT (EXIT)
+### e. MEMBUAT FUNGSI PADA BUTTON CLEAR
 <pre>
-  private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {                                        
+  private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
-        System.exit(0);
-    } 
+        tfNIM.setText("");
+        tfNama.setText("");
+        tfAlamat.setText("");
+        tfAsal.setText("");
+        tfOrtu.setText("");
+    }    
 </pre>
 
-### f. MEMBUAT FUNGSI PADA BUTTON LOGOUT (LOGOUT)
+### f. MEMBUAT FUNGSI PADA BUTTON LOGOUT
 <pre>
-  private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {                                        
+  private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
-        formLogin z = new formLogin();
-        z.setVisible(true);
+        LoginMhs y = new LoginMhs();
+        y.setVisible(true);
         this.dispose();
     }   
 </pre>
 
-### g. MEMBUAT FUNGSI PADA BUTTON UPLOAD (UPLOAD)
+### g. MEMBUAT FUNGSI PADA BUTTON UPLOAD
 <pre>
-  private void btnUploadActionPerformed(java.awt.event.ActionEvent evt) {                                          
-        // TODO add your handling code here:
-
-        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        int returnValue = jfc.showOpenDialog(null);
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
-        EntityManager em = emf.createEntityManager();
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File filePilihan = jfc.getSelectedFile();
-            System.out.println("yang dipilih : " + filePilihan.getAbsolutePath());
-
-            try (BufferedReader br = new BufferedReader(new FileReader(filePilihan))) {
-                Class.forName(driver);
-                String baris;
-                String pemisah = ";";
-
-                while ((baris = br.readLine()) != null) {
-                    String[] data = baris.split(pemisah);
-                    String nim = data[0];
-                    String nama = data[1];
-                    String alamat = data[2];
-                    String asalSMA = data[3];
-                    String namaOrtu = data[4];
-
-                    if (!nim.isEmpty() && !nama.isEmpty() && !alamat.isEmpty() && !asalSMA.isEmpty() && !namaOrtu.isEmpty()) {
-                        em.getTransaction().begin();
-
-                        Mahasiswaa mk = new Mahasiswaa();
-                        mk.setNim(nim);
-                        mk.setNama(nama);
-                        mk.setAlamat(alamat);
-                        mk.setAsalsma(asalSMA);
-                        mk.setNamaortu(namaOrtu);
-
-                        em.persist(mk);
-
-                        em.getTransaction().commit();
-                        JOptionPane.showMessageDialog(null, "Sukses diinput");
-                        tampil();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Gagal diinput");
-                    }
-                }
-                em.close();
-                emf.close();
+  
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(null, "Gagal diinput");
             } catch (IOException ex) {
