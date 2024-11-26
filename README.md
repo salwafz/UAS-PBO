@@ -13,7 +13,9 @@ Ujian Akhir Semester PBO, Membuat CRUD Mahasiswa disertai dengan laporan menggun
 ![image](https://github.com/user-attachments/assets/f03c96e9-db1e-41f4-ab70-065eafdecd08)
 ### c. Buat koneksi baru pada New Connection
 ![image](https://github.com/user-attachments/assets/c150463d-3ecb-49bb-85c0-ad544d5073ec)
+
 ![image](https://github.com/user-attachments/assets/9bc2bd25-fd0f-4077-8d77-8fc5625e90ee)
+
 Pilih Driver PostgreSQL
 ### d. Masukkan database anda dan klik next
 ![image](https://github.com/user-attachments/assets/bde6b8e2-1ea8-4daf-bdda-d90613fb58da)
@@ -23,6 +25,7 @@ Pilih Driver PostgreSQL
 ## 2. Buat File JFrame Form untuk membuat tampilan GUI, berikut adalah tampilan dan JFrame yang harus dibuat :
 ### a. Tampilan formMahasiswa
 ![image](https://github.com/user-attachments/assets/f26a646a-ba1a-4094-8116-d72a203368d3)
+
 Dengan ketentuan :
 TextField (Nim, Nama, Alamat, AsalSMA, NamaOrtu)
 Button (Insert, Update, Delete, Clear, Upload, Print, Logout)
@@ -30,6 +33,7 @@ Table Mouse Clicked
 
 ### b. Tampilan form LoginMahasiswa
 ![image](https://github.com/user-attachments/assets/76de145f-c5fa-4834-b364-1a14db8011e7)
+
 Dengan Ketentuan :
 TextField (Username, Password)
 Button (Login)
@@ -38,6 +42,7 @@ CheckBox (Tampilkan Password)
 
 ### c. Tampilan form CreateAccount
 ![image](https://github.com/user-attachments/assets/b5147f9f-2809-4820-a16a-5ab66f376d7a)
+
 TextField (Username, Password)
 Text (Login)
 Button (Create new account)
@@ -252,56 +257,43 @@ Masukkan source berikut untuk memasukkan data pada form Mahasiswa
 
 ## 4. Membuat Laporan Menggunakan Jasper Report pada form mahasiswa
 ### a. Klik kanan pada package > New > Report Wizard, Pastikan anda sudah menambahkan library JasperReport pada Library Projek anda.
-![image](https://github.com/user-attachments/assets/f72ee571-b027-4379-9fec-1ac9ca596a63)
+![image](https://github.com/user-attachments/assets/6e6bdb6e-9929-45e2-ba3a-2c32dc8b3335)
 ### b. Pilih template sesuai keinginan anda, kemudian next.
-![image](https://github.com/user-attachments/assets/d780b96b-ea2d-43d8-9209-9ebd6b42e15c)
+![image](https://github.com/user-attachments/assets/30938339-66f0-4d79-920c-71a5b00a1fc9)
 ### c. Masukkan database yang akan dikoneksikan, dan ketik sql berikut pada kolom sql
-![image](https://github.com/user-attachments/assets/9b8be955-8474-4294-ac8c-3bfa8bf37ab0)
+![image](https://github.com/user-attachments/assets/c48bb748-0d11-44f6-bb88-0e41ff9518dd)
+
 Add all Field yang ada di tabel kiri, kemudian next sampai selesai.
 ![image](https://github.com/user-attachments/assets/da85b6ec-2d5b-494a-97ec-7e82f31805d8)
 
 ### d. Masukkan source code berikut pada button CETAK :
 <pre>
-  private void btnCetakActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        // TODO add your handling code here:
-        String driver = "org.postgresql.Driver";
-        String koneksi = "jdbc:postgresql://localhost:5432/entitasMahasiswa";
-        String user = "postgres";
-        String password = "lyra123";
-        File reportFile = new File(".");
-        String dirr = "";
+  try {
+            JasperReport reports;
+            String path = "src\\UAS\\report.jasper";
+            reports = (JasperReport) JRLoader.loadObjectFromFile(path);
+            JasperPrint print = JasperFillManager.fillReport(path, null, conn);
+            JasperViewer view = new JasperViewer(print, false);
+            view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            view.setVisible(true);
 
-        try {
-            Class.forName(driver);
-            Connection conn = DriverManager.getConnection(koneksi, user, password);
-            java.sql.Statement stmt = conn.createStatement();
-            String sql = "SELECT * FROM mahasiswaa";
-            dirr = reportFile.getCanonicalPath() + "/src/UASPBO/";
-            JasperDesign design = JRXmlLoader.load(dirr + "report1.jrxml");
-            JasperReport jr = JasperCompileManager.compileReport(design);
-            ResultSet rs = stmt.executeQuery(sql);
-            JRResultSetDataSource rsDataResource = new JRResultSetDataSource(rs);
-            JasperPrint jp = JasperFillManager.fillReport(jr, new HashMap(), rsDataResource);
-            JasperViewer.viewReport(jp);
-        } catch (ClassNotFoundException | SQLException | IOException | JRException ex) {
-            JOptionPane.showMessageDialog(null, "\nGagal Mencetak\n" + ex,
-                    "Kesalahan", JOptionPane.ERROR_MESSAGE);
-        }
-    }         
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+        }  
 </pre>
 
 ## 5. Membuat CREATE pada LOGIN dan CREATE LOGIN
-### a. Create Login
-Masukkan Source Code berikut pada BUTTON SIMPAN formCreateLogin
+### a. Button Create
+Masukkan Source Code berikut pada BUTTON INSERT form CreateAcc
 <pre>
   private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {                                          
         // TODO add your handling code here:
-        if (txtUsername.getText().equals("") || txtPassword.getText().equals("")) {
+        if (tfUser.getText().equals("") || tfPass.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Isi username dan password");
         } else {
             String username, password;
-            username = txtUsername.getText();
-            password = txtPassword.getText();
+            username = tfUser.getText();
+            password = tfPass.getText();
 
             if (password.length() < 8) {
                 JOptionPane.showMessageDialog(null, "Password harus memiliki setidaknya 8 karakter.");
@@ -325,17 +317,17 @@ Masukkan Source Code berikut pada BUTTON SIMPAN formCreateLogin
                 return;
             }
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("UAS_PBO");
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
 
-            Pwloginmhs y = em.find(Pwloginmhs.class, username);
+            Loginmahasiswa y = em.find(Loginmahasiswa.class, username);
             if (y != null) {
                 JOptionPane.showMessageDialog(null, "Username sudah digunakan, gunakan Username lain");
                 bersih();
-                txtUsername.requestFocus();
+                tfUser.requestFocus();
             } else {
-                Pwloginmhs account = new Pwloginmhs();
+                Loginmahasiswa account = new Loginmahasiswa();
                 account.setUsername(username);
                 account.setPassword(password);
                 em.persist(account);
@@ -345,113 +337,118 @@ Masukkan Source Code berikut pada BUTTON SIMPAN formCreateLogin
                 bersih();
 
                 this.dispose();
-                formLogin frame = new formLogin();
+                LoginMhs frame = new LoginMhs();
                 frame.setVisible(true);
             }
             em.close();
             emf.close();
         }
-    }         
+    }          
 </pre>
 
-### b. Login 
-Masukkan Source Code berikut pada BUTTON Login pada formLogin untuk masuk pada form mahasiswa.
+### b. Button Login 
+Masukkan Source Code berikut pada Text Login pada formLogin untuk masuk pada form mahasiswa.
 <pre>
   private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
-        if (txtUsername.getText().equals("") | txtPassword.getText().equals("")) {
+        if (tfUser.getText().equals("") | tfPass.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "Isi Terlebih Dahulu");
         } else {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("LatihanSemester3PU");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("UAS_PBO");
             EntityManager em = emf.createEntityManager();
 
             em.getTransaction().begin();
 
-            String username = txtUsername.getText();
-            String password = txtPassword.getText();
-            Pwloginmhs y = em.find(Pwloginmhs.class, username);
+            String user = tfUser.getText();
+            String pw = tfPass.getText();
+            Loginmahasiswa y = em.find(Loginmahasiswa.class, user);
 
             if (y == null) {
                 JOptionPane.showMessageDialog(null, "Username tidak ditemukan");
-                bersih();
-            } else if (y.getPassword().equals(password)) {
-                JOptionPane.showMessageDialog(null, "SELAMAT DATANG!");
-                formMahasiswa m = new formMahasiswa();
-                m.setVisible(true);
+            } else if (y.getPassword().equals(pw)) {
+                JOptionPane.showMessageDialog(null, "SELAMAT DATANG !!!!!!");
+                FormMahasiswa p = new FormMahasiswa();
+                p.setVisible(true);
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(null, "Username atau Password yang Anda Masukkan Salah!");
+                JOptionPane.showMessageDialog(null, "Username atau Password salah!");
             }
             em.getTransaction().commit();
             em.close();
             emf.close();
         }
-    }     
-</pre>
-
-### c. Membuat fungsi untuk Text create new account pada formLogin
-<pre>
-  private void createnewMouseClicked(java.awt.event.MouseEvent evt) {                                       
-        // TODO add your handling code here:
-        formCreateLogin y = new formCreateLogin();
-        y.setVisible(true);
-        this.dispose();
     }  
 </pre>
 
-### d. Membuat fungsi Show Password pada atribut CheckBox yang ada pada formLogin dan formCreateLogin.
+### c. Membuat fungsi untuk Text create an account pada form LoginMahasiswa
+<pre>
+  private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {                                     
+        // TODO add your handling code here:
+        CreateAcc y = new CreateAcc();
+        y.setVisible(true);
+        this.dispose();
+    }     
+</pre>
+
+### d. Membuat fungsi Tampilkan Password pada atribut CheckBox yang ada pada form LoginMahasiswa dan form CreateAcc
 CheckBox ini nantinya digunakan untuk melihat password yang diinputkan.
 <pre>
-  private void cbPwActionPerformed(java.awt.event.ActionEvent evt) {                                     
+  private void cbTampilkanActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
-        if(cbPw.isSelected()){
-            txtPassword.setEchoChar((char)0);
+        if (cbTampilkan.isSelected()){
+            tfPass.setEchoChar((char)0);
+        } else {
+            tfPass.setEchoChar('*');
         }
-        else
-        txtPassword.setEchoChar('*');
-    }                    
+    }                      
 </pre>
 
 # DEMO PROGRAM
 ## 1. Login
-### a. Menjalankan formLogin
-Fungsi Show Password
-![image](https://github.com/user-attachments/assets/9d5581ad-506b-4379-8b92-6a128a901d86)
+### a. Menjalankan form Login
+Fungsi Show Password (checkbox ini berfungsi untuk melihat password apabila dicentang)
+![image](https://github.com/user-attachments/assets/70b09c1e-7879-435e-bbb4-214331ea8b32)
 ### b. Jika username belum daftar
-![image](https://github.com/user-attachments/assets/8aa1929d-cca3-465b-afba-e0f470790ac6)
+![image](https://github.com/user-attachments/assets/583a5be0-f38c-4e23-915c-e148731c7415)
 
 ## 2. Create Login
-### a. Klik create new account pada formLogin
+### a. Klik create an account pada form Login
 ### b. Jika Password tidak sesuai dengan ketentuan, akan muncul nontifikasi
-![image](https://github.com/user-attachments/assets/7757deae-d0b7-4bcf-bf63-fa471f587c3a)
-### c. Jika berhasil, akan diarahkan pada halaman Login. Dan jika Login berhasil akan diarahkan pada halaman formMahasiswa
-![image](https://github.com/user-attachments/assets/d0403215-905b-4509-a390-8fa3f7ae5e8d)
-![image](https://github.com/user-attachments/assets/b978f88a-ee95-4bba-a9f6-4238f9657fcf)
+![image](https://github.com/user-attachments/assets/be696b54-4088-4562-a7e2-aec9d90b3e88)
+### c. Jika berhasil, akan diarahkan pada halaman Login. Dan jika Login berhasil akan diarahkan pada halaman form LoginMahasiswa
+![image](https://github.com/user-attachments/assets/cfeeff64-df34-409f-bddd-5f7d1546eff4)
 
 ## 3. CRUD Mahasiswa
-### a. Tampil/Read
-![image](https://github.com/user-attachments/assets/d3674719-c4fe-460b-bcef-4e9b0fff3c4f)
-### b. Create
-![image](https://github.com/user-attachments/assets/bb608786-d10c-496b-801a-cedd5ee500e7)
-![image](https://github.com/user-attachments/assets/fe7710c9-a485-4663-9359-615c38a06b6e)
-![image](https://github.com/user-attachments/assets/f04f5b5d-4712-4da5-9a1d-481d3986901b)
+### a. Tampil
+![image](https://github.com/user-attachments/assets/ee21b943-2fb2-4f96-8e68-5232267ea6aa)
+### b. Insert
+![image](https://github.com/user-attachments/assets/c3001193-56e1-4d0f-9d6e-b238f23a3bc4)
 
 ### c. Update
-![image](https://github.com/user-attachments/assets/b5a66804-508d-4788-bd7d-767729925474)
-![image](https://github.com/user-attachments/assets/57ea9dbe-461d-46e0-a39f-6970270404b2)
+![image](https://github.com/user-attachments/assets/5bc5436d-f315-451a-a772-d958a7bab218)
 
 ### d. Delete
-![image](https://github.com/user-attachments/assets/6203ad9a-a40a-4b0a-bcea-b8cea0dd137e)
-![image](https://github.com/user-attachments/assets/f2deb5dd-7db4-45ab-bbec-6a01bcc5d2e0)
+![image](https://github.com/user-attachments/assets/672b2122-4c3f-40b3-9ee0-41ab8c8cf240)
+![image](https://github.com/user-attachments/assets/4f692a8f-0002-4793-86f0-036b58b2a4e0)
 
 ### e. Upload 
 Buat data pada MS.Excel kemudian simpan dengan extension .csv
-Klik button Upload, pilih file .csv
-![image](https://github.com/user-attachments/assets/f0c85062-6d6e-42a4-91ae-04a4b2a84dde)
-![image](https://github.com/user-attachments/assets/e8904716-2791-4735-9797-a754f3b2f160)
+Klik button Upload, pilih file .csv 
 
-### e. Cetak
-Klik button Cetak
-![image](https://github.com/user-attachments/assets/26605243-60ce-4e73-93b6-6d61f1c335c9)
+Buat data di Excel
 
-# TERIMA KASIH, SELAMAT BEREKSPLOR
+![image](https://github.com/user-attachments/assets/3b9fc271-c3d9-4b9d-a72b-4b2d865e5738)
+
+Klik Upload > pilih file > next
+
+![image](https://github.com/user-attachments/assets/d5ba2bb9-a057-4f78-a02f-a16afc9b3d65)
+
+Maka data yang ada di excel akan otomatis masuk pada aplikasi GUI 
+
+![image](https://github.com/user-attachments/assets/d1aef9f2-5277-4766-8a3c-6b6ee9e102fe)
+
+### e. Print
+Klik button Print
+![image](https://github.com/user-attachments/assets/97a25896-b752-46d1-8d3c-58547defcd25)
+
+# SEKIAN DARI SAYA, SEMOGA PENJELASAN INI DAPAT MEMBANTU DALAM MEMAHAMI PENUGASAN KALI INI. TERIMA KASIH!!!🙌😊
